@@ -8,8 +8,8 @@ This project replicates and analyzes a multimodal approach to detecting bots on 
   Utilized the TwiBot-22 dataset, fully labeled with 1,000,000 users. Features were extracted from user profiles and tweets, including numerical, boolean, and text features. Due to computational constraints, a subset of users and one chunk of tweets (~10 GB) was used.
 
 - **Feature Engineering:**  
-  - **User-level features:** 47 numerical/boolean features including account metrics, ratios, growth rates, text characteristics, and sentiment, plus user description embeddings.   
-  - **Tweet-level features:** Aggregated metrics from recent tweets (e.g., likes, retweets, replies), along with truncated and non-truncated tweet text embeddings.  
+  - **User-level features:** 47 numerical/boolean features including account metrics, ratios, growth rates, text characteristics, and sentiment, plus user descriptions.   
+  - **Tweet-level features:** Aggregated metrics from recent tweets (e.g., likes, retweets, replies), along with truncated and non-truncated tweet texts.  
 
 - **Text Embeddings:**  
   User descriptions encoded with `distiluse-base-multilingual-cased-v1`. Tweets encoded with four different embedding strategies, varying the model (`distiluse-base-multilingual-cased-v1` or `paraphrase-multilingual-MiniLM-L12-v2`) and aggregation method (concatenation vs mean-pooling).
