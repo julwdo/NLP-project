@@ -1,0 +1,100 @@
+Notes
+Enhancing misinformation countermeasures: a multimodal approach
+to twitter bot detection
+Olmar Arranz‑Escudero1 · Lara Quijano‑Sanchez1,2 · Federico Liberatore2,3
+
+1 Intro:
+Social media play pivotal role
+X one of the most widely used and far reaching
+has influence on user perspectives and societal discourse
+replacement for traditional media as source of news
+approx. 9% of X accounts are bots (Periasamy et al. 2022) -> millions of users
+bots contribute to spreading misinformation, electoral manipulation,promotion of extremism, proliferation of conspiracy theories
+spread of false information distorts public opinion, undermines democratic processes
+only a few studies explore a multi-modal approach (Tan et al. 2023; Ye et al. 2023; Feng et al. 2021)
+most studies incorporate fewer than 10 features
+research questions:
+1. text vs. performance of bot classifiers
+2. more features vs. performance of bot classifiers
+3. graph-based methods - are they better?
+4. which features are the most important
+authors achieved performance increase of 5.48% on TwiBot-22 compared to previous methods
+
+2 State of the art:
+TwiBot-22 is a graph-based benchmark, the most extensive dataset available to date, fully labeled, contains various X components , such as users, tweets, lists and hashtags
+statistics:
+1,000,000 users
+860,057 humans
+139,943 bots
+88,217,457 tweets (76,123,456 human tweets, 12,094,001 bot tweets)
+TwiBot-20 contained 229,580 users, out of which only 11,826 were labelled
+MGTAB lacks user descriptions
+TwiBot-20 is considered outdated, bot behaviour is rapidly evolving
+TwiBot-22 includes 14 user relationship types and richer user data, 
+although graph-based techniques show impressive results, they face challenges like high computation time and potential sampling bias (Cai et al. 2024)
+==
+important for thesis:
+Other efforts focus on mitigating class imbalance in training data (Shi et al. 2024) and design an Oversampling Strategy for GNNs (OS-GNN) that does not necessitate new edge synthesis.
+For instance, (Sharma et al. 2023a) conducted a comprehensive
+survey on detecting fake images, highlighting the
+importance of hybrid models that integrate diverse features.
+Similarly, (Singh and Sharma 2022) proposed a multi-modal
+approach to predict image credibility in fake news, demonstrating
+the potential of combining textual and visual features
+for enhanced performance.
+==
+
+3 Methods:
+data processing steps:
+1) remove users with missing data such as followers_count, tweets_count
+2) standardize numerical feature to have mean 0 and variance 1 (to improve model stability and convergence)
+3) tokenize description and tweets, remove stopwords, embed description using RoBERTa -> dimension 768, embed tweets using RoBERTa -> dimension 768 Q: which model exactly?
+4) address data imbalance (86% humans, 14% bots) by weighting loss function
+5) remove attributes with zero importance according to XGBoost results
+relational graph neural network (R-GCN) is used, 3 edge types; R-GCNs are specifically designed to handle heterogeneous
+graphs, which include various types of nodes and edges.; By contrast, R-GCN is better suited to handle heterophilic relationships because it does not assume homogeneity in node types or interactions.
+user features submodule:
+they introduced new features with respect to previous studies
+there are 46 features: 34 numeric, 12 categorical
+previous studies usually used around 20 features
+as technology advances, bots become better at avoiding detection and so a more extensive and varied set of features is needed
+text analysis submodule:
+==
+improvement idea: use Twitter-specific language model
+==
+RoBERTa used for computational efficiency
+pipeline: tokenize, remove stopwords, vectorize
+most recent 20 tweets are considered
+all features are concatenated, there are 1582 in total
+they use cross-entropy loss function with softmax to obtain final probabilities
+they used grid search to optimize hyperparameters of the nn; they explored the following: hidden_dimension = [64, 128, 256]; dropout = [0.2, 0.3, 0.4]; epochs = [100, 150, 200]; and lr = [0.01, 0.001, 0.0001]; the optimal configuration when looking at F1 was hidden_dimension: 64; Dropout rate: 0.2; Number of epochs: 200; earning rate: 0.01
+they split data into 70% training, 20% validation and 10% test
+
+4 Experiments and results:
+the previous best result (BotPercent) Tan et al. 2023 has F1 score 0.726
+TMTM model has an F1 score of 0.7658
+==
+important for thesis:
+We here note the value of centrality measures which,
+despite their limited applicability to all users, indicates
+potential to boost prediction accuracy. This insight prompts
+further exploration into ensuring that future datasets include
+comprehensive centrality relationships for all users, which
+could potentially elevate system performance across the
+board.
+==
+we observe that the complete removal of the Text Analysis
+Submodule has the most significant negative impact on performance,
+underscoring its importance in the TMTM model.
+all existing multimodal approaches used only 5 numerical and 3 categorical features (by categorical they mean boolean)
+Additionally, reducing or removing
+user-related features-both numerical and categorical-leads
+to decreased performance, with numerical features having a
+slightly greater effect
+Attributes like the ratio of uppercase to lowercase letters and entropy-based measures capture subtle patterns that differentiate bots from humans. However, we have observed diminishing returns with highly correlated or redundant features, emphasizing the need for careful feature selection.
+From the feature importance’s, attributes with less than 90%, 75%,
+and 50% importance have been sequentially eliminated, refining
+our feature sets to 42, 35, and 23 attributes, respectively. The decrease in the model’s performance deriving from the reduction of the feature set shows the necessity of including the full set of characteristics to obtain high classification capabilities.
+
+5 Conclusions:
+limitations: computational resources

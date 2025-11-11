@@ -1,0 +1,23 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\astroncite{Arranz-Escudero et~al.}{2025}]{ArranzEscudero2025}
+Arranz-Escudero, O., Quijano-Sanchez, L., and Liberatore, F. (2025).
+\newblock Enhancing misinformation countermeasures: A multimodal approach to
+  Twitter bot detection.
+\newblock {\em Social Network Analysis and Mining}, 15(1):26.
+
+\bibitem[\protect\astroncite{Chawla et~al.}{2002}]{Chawla2002smote}
+Chawla, N.~V., Bowyer, K.~W., Hall, L.~O., and Kegelmeyer, W.~P. (2002).
+\newblock SMOTE: Synthetic Minority Over-sampling Technique.
+\newblock {\em Journal of Artificial Intelligence Research}, 16:321--357.
+
+\bibitem[\protect\astroncite{Feng et~al.}{2022}]{feng2022twibot22}
+Feng, S., Tan, Z., Wan, H., Wang, N., Chen, Z., Zhang, B., Zheng, Q., Zhang,
+  W., Lei, Z., Yang, S., Feng, X., Zhang, Q., Wang, H., Liu, Y., Bai, Y., Wang,
+  H., Cai, Z., Wang, Y., Zheng, L., Ma, Z., Li, J., and Luo, M. (2022).
+\newblock TwiBot-22: Towards Graph-Based Twitter Bot Detection.
+\newblock In {\em Advances in Neural Information Processing Systems 35
+  (Datasets and Benchmarks Track)}.
+\newblock arXiv:2206.04564.
+
+\end{thebibliography}

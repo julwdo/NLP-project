@@ -1,0 +1,77 @@
+settings: oversampling 0.5, batch 32, dropout 0.5, non-weighted loss function, threshold 0.5
+
+en:
+
+v1:
+description truncated to 256 tokens
+English-language tweets
+top 20 tweets
+each tweet truncated to 12 tokens
+all tweet texts concatenated into a string of 240 tokens
+description encoded using all-MiniLM-L6-v2
+tweet texts concatenated encoded using all-MiniLM-L6-v2
+
+v2:
+description truncated to 256 tokens
+English-language tweets
+top 20 tweets
+each tweet truncated to 12 tokens
+all tweet texts concatenated into a string of 240 tokens
+description encoded using all-MiniLM-L6-v2
+tweet texts concatenated encoded using paraphrase-MiniLM-L6-v2
+
+v3:
+description truncated to 256 tokens
+English-language tweets
+top 20 tweets
+non-truncated tweet texts
+all tweet texts collected into a list
+description encoded using all-MiniLM-L6-v2
+each tweet text encoded using all-MiniLM-L6-v2 and then mean pooling performed
+
+v4:
+description truncated to 256 tokens
+English-language tweets
+top 20 tweets
+non-truncated tweet texts
+all tweet texts collected into a list
+description encoded using all-MiniLM-L6-v2
+each tweet text encoded using paraphrase-MiniLM-L6-v2 and then mean pooling performed
+
+all lang:
+
+v1:
+description truncated to 256 tokens
+all langs
+top 10 tweets
+each tweet truncated to 12 tokens
+all tweet texts concatenated into a string of 120 tokens
+description encoded using distiluse-base-multilingual-cased-v1
+tweet texts concatenated encoded using distiluse-base-multilingual-cased-v1
+
+v2:
+description truncated to 256 tokens
+all langs
+top 10 tweets
+each tweet truncated to 12 tokens
+all tweet texts concatenated into a string of 120 tokens
+description encoded using distiluse-base-multilingual-cased-v1
+tweet texts concatenated encoded using paraphrase-multilingual-MiniLM-L12-v2
+
+v3:
+description truncated to 256 tokens
+all langs
+top 10 tweets
+non-truncated tweet texts
+all tweet texts collected into a list
+description encoded using distiluse-base-multilingual-cased-v1
+each tweet text encoded using distiluse-base-multilingual-cased-v1 and then mean pooling performed
+
+v4:
+description truncated to 256 tokens
+all langs
+top 10 tweets
+non-truncated tweet texts
+all tweet texts collected into a list
+description encoded using distiluse-base-multilingual-cased-v1
+each tweet text encoded using paraphrase-multilingual-MiniLM-L12-v2 and then mean pooling performed

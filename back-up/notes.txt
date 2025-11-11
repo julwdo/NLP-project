@@ -1,0 +1,243 @@
+This work is based on the work of Olmar Arranz‑Escudero1 · Lara Quijano‑Sanchez1,2 · Federico Liberatore2,3 entitled Enhancing misinformation countermeasures: a multimodal approach
+to twitter bot detection who built on existing literature by answering these four research questions:
+
+RQ1: Do natural language processing (NLP) techniques enhance the performance of bot classifiers?
+RQ2: Can increasing the number of features in models that combine multiple detection techniques improve their effectiveness?
+RQ3: Do graph-based methods show improvement with the addition of more relations?
+RQ4: What are the most effective features to be included in bot detection models?
+
+Authors used a comprehensive Twitter dataset called TwiBot-22 gathered by Feng et al. 2022. Their approach improved upon the previous papers (5.48\% performance increase).
+
+Authors identified three main bot detection methodologies. These are:
+1. Feature-based methods, which rely on feature engineering to design detection attributes and then subsequently using algorithms such as random forest, boosting algorithms or unsupervised techniques like clustering or anomaly detection methods to detect bots.
+2. Text-based methods that employ NLP to analyze tweets and user descriptions utilizing tools such as word embeddings, RNNs, attention mechanisms, and pre-trained models like RoBERTa
+(Robustly Optimized BERT Pretraining Approach).
+3. Graph-based methods that view X as a graph of interconnected user nodes and use graph ML tools to detect bots. They examine node centrality, learn node representations, use graph neural networks (GCN, GAT, RGCNs) to analyze network interactions.
+
+Data Processing section:
+
+The whole TwiBot-22 dataset is huge. It contains 1,000,000 users with 860,057 being humans and 139,943 being bots. It also contains 88,217,457 tweets of these users. It's the most comprehensive dataset now. Tweets are stored in 9 files each being as large as around 10/11gb. Some other files provided by the owners are files containing user level features, user labels and information about how users are connected (edges). Only one chunk of tweets was used in this project, since processing all 9 chunks would take too much memory and time. Apart from tweets, also the corresponding users from the user file were considered together with their labels. First part of the analysis, that is feature engineering, was performed in Python spark framework which is suitable for processing large datasets, while the rest of the analysis was performed in a regular Python framework (using pandas, numpy etc.).
+
+Feature engineering:
+The following features were extracted from the user file:
+name_length - number of characters in name
+username_length - number of characters in username
+username_name_length_ratio - ratio of username_length to name_length
+description - user description, where urls, mentions and e-mails were replaced with <URL>, <USER> and <EMAIL> tokens
+description_length - number of characters in description
+has_name - 1 if user has a non-empty name, 0 otherwise
+has_username - 1 if user has a non-empty username, 0 otherwise
+has_description - 1 if user has a non-empty description, 0 otherwise
+has_url - 1 if user has a non-empty url, 0 otherwise
+has_location - 1 if user has a non-empty location, 0 otherwise
+has_pinned_tweet - 1 if user has a pinned tweet, 0 otherwise
+has_bot_word_in_name - 1 if user's name contains "bot", 0 otherwise
+has_bot_word_in_description - 1 if user's description contains "bot", 0 otherwise
+ratio_digits_in_name - the ratio of the number of digits in name to the total name length
+ratio_digits_in_username - the ratio of the number of digits in username to the total username length
+ratio_digits_in_description - the ratio of the number of digits in description to the total description length
+ratio_special_chars_in_name - the ratio of the number of special characters (not letters, not digits, not spaces) in name to the total name length
+ratio_special_chars_in_username - the ratio of the number of special characters (not letters, not digits, not spaces) in username to the total username length
+ratio_special_chars_in_description - the ratio of the number of special characters (not letters, not digits, not spaces) in description to the total description length
+name_upper_to_lower_ratio - the ratio of the number of upper case letter to the number of lower case letter in name
+username_upper_to_lower_ratio - the ratio of the number of upper case letter to the number of lower case letter in username
+name_entropy - Shannon entropy of name
+username_entropy - Shannon entropy of username
+username_name_levenshtein - normalized Levenshtein distance between username and name
+description_sentiment - description sentiment (compound score computed using VADER)
+cashtag_in_description_count - number of cashtags (e.g., \$AAPL) in description
+hashtag_in_description_count - number of hashtags in description
+mention_in_description_count - number of mentions in description
+url_in_description_count - number of urls in description
+is_protected - 1 if account is protected, 0 otherwise
+is_verified - 1 if account is verified, 0 otherwise
+account_age_seconds - time from account creation to the moment of executing script in seconds
+followers_count - number of followers
+following_count - number of accounts being followed
+listed_count - number of lists the user is a member of (is listed on them)
+tweet_count - number of posted tweets
+followers_over_following - ratio of the number of followers to the number of following
+double_followers_over_following - double the ratio of the number of followers to the number of following
+following_over_followers - ratio of the number of following to the number of followers
+following_over_followers_squared - ratio of the number of following to the number of followers squared
+following_over_total_connections - ratio of the number of following to the sum of followers and following
+listed_over_followers - ratio of listed count to followers count
+tweets_over_followers - ratio of tweet count to followers count
+listed_over_tweets - ratio of listed count to tweet count
+follower_rate - ratio of followers count to account age in seconds
+following_rate - ratio of following count to account age in seconds
+listed_rate - ratio of listed count to account age in seconds
+tweet_rate - ratio of tweet count to account age in seconds
+
+To each user, the corresponding label (bot, human) was joined. Each user's description was truncated to include at maximum 256 tokens (the maximum number of input tokens for the embedding models used).
+
+Subsequently, the tweet file was processed. Some features were extracted from it, aggregated on user level and joined to the user data to enhance user features. Not all, but the most recent tweets were considered for efficiency purposes. There were some variants:
+
+When tweets in all languages were considered, the following were the variants when it comes to tweet texts:
+1. Take the most recent 10 tweets, each truncated to maximum 12 tokens. Concatenate all tweet texts per user into one string.
+2. Take the most recent 10 tweets. No truncation. Gather all tweet texts per user into a list.
+Aside from textual feature, the following feature per user were created:
+top_tweets_reply_fraction - fraction of all tweets which are a reply to another tweet
+top_tweets_num_distinct_langs - the number of distinct languages of tweets
+top_tweets_sensitive_fraction - fraction of all tweets which possibly contain sensitive content
+top_tweets_avg_likes - the average number of likes over tweets
+top_tweets_avg_quotes - the average number of quotes over tweets
+top_tweets_avg_replies - the average number of replies over tweets
+top_tweets_avg_retweets - the average number of retweets over tweets
+
+When tweets only in English were considered, the following were the variants when it comes to tweet texts:
+1. Take the most recent 20 tweets, each truncated to maximum 12 tokens. Concatenate all tweet texts per user into one string.
+2. Take the most recent 20 tweets. No truncation. Gather all tweet texts per user into a list.
+The same other features were created as in the case when considering all languages, except for the top_tweets_num_distinct_langs since only English language was considered this time.
+
+All languages:
+
+There were 314813 users and 58 features (42 numeric, 10 boolean, 2 text). Missing values were found in two columns (top_tweets_avg_quotes, top_tweets_avg_replies), 56.52\% in both. Since there were already many other features and the percentage of missing values was substantial, no imputation was performed, but simply these two columns were dropped. The class imbalance turned out to be quite high with 92.46\% accounts being human accounts and 7.54\% being bot accounts. Train-test split was performed with the test set being 10\% of the whole dataset. A stratified approach was used to retain original class distribution. Indeed, these were the distributions:
+
+Training set: 283331 rows (90.00% of dataset)
+  Class 0: 261979 rows (92.46%)
+  Class 1: 21352 rows (7.54%)
+----------------------------------------
+Test set: 31482 rows (10.00% of dataset)
+  Class 0: 29110 rows (92.47%)
+  Class 1: 2372 rows (7.53%)
+----------------------------------------
+
+Since there were many features, maybe some of them were redundant. So some feature selection methods were used. These feature selection methods were performed only based on the training set to prevent information leakage (the information in the test set should not be used, should not influence modelling decisions, since the test set should allow to test how the model will behave on some real-world data it has never seen). So the action fit was performed on the training set and then the same changes were applied to the test set.
+
+First, pairwise correlation between numeric features was checked. It turned out that only six feature pairs are highly correlated:
+
+Highly correlated pairs (>|0.8|):
+followers_count - follower_rate: 0.98
+following_count - following_rate: 0.98
+listed_count - listed_rate: 0.99
+tweet_count - tweet_rate: 0.96
+followers_over_following - double_followers_over_following: 1.00
+following_over_followers - following_over_followers_squared: 0.96
+
+However, since the author did not want to make some arbitrary choices, no features were dropped at this point. Next the variance of numeric/boolean features was examined.
+
+Features with variance < 0.01:
+has_username: 0.000000
+listed_rate: 0.000000
+following_rate: 0.000000
+tweet_rate: 0.000000
+follower_rate: 0.000004
+has_name: 0.000032
+ratio_digits_in_description: 0.000829
+has_bot_word_in_name: 0.000924
+ratio_digits_in_name: 0.001506
+has_bot_word_in_description: 0.001853
+is_protected: 0.001994
+ratio_special_chars_in_username: 0.002008
+top_tweets_sensitive_fraction: 0.004211
+
+There were several features with variance below 0.01. This low variation in feature values means that these features have a low discriminatory power. They would not help in clearly distinguishing between human and bot accounts. So these features were dropped.
+
+Next, Gradient Boosting Classifier was used to select important features among those numeric/boolean features that were left. Its hyperparameters were as follows: n_estimators=100, learning_rate=0.1, max_depth=3, subsample=1.0, loss='log_loss', max_features=None. This meant that 100 trees were created, the learning rate was 0.1, the maximum depth of individual trees was 3, all samples when creating each tree were used, loss function used was log loss, at each split all features were considered as possible candidates. Feature importances were computed based on how much each feature reduces the loss function (impurity reduction) on average across all trees. The normalized feature importances were pooled together and only those features whose importance exceeded the median were kept. These two steps resulted in the following numeric/boolean features being kept: ['name_length', 'username_name_length_ratio', 'description_length', 'ratio_special_chars_in_name', 'ratio_special_chars_in_description', 'hashtag_in_description_count', 'account_age_seconds', 'followers_count', 'following_count', 'tweet_count', 'double_followers_over_following', 'listed_over_followers', 'tweets_over_followers', 'listed_over_tweets', 'top_tweets_reply_fraction', 'top_tweets_avg_likes', 'top_tweets_avg_retweets', 'has_description', 'is_verified'] and their feature importance was as follows:
+
+                               feature  importance
+7                      followers_count    0.497149
+2                   description_length    0.140224
+9                          tweet_count    0.103552
+8                      following_count    0.067833
+17                     has_description    0.063071
+16             top_tweets_avg_retweets    0.030339
+18                         is_verified    0.023033
+6                  account_age_seconds    0.021680
+1           username_name_length_ratio    0.010554
+5         hashtag_in_description_count    0.005825
+0                          name_length    0.005472
+11               listed_over_followers    0.004980
+10     double_followers_over_following    0.003283
+13                  listed_over_tweets    0.003020
+4   ratio_special_chars_in_description    0.002651
+15                top_tweets_avg_likes    0.002174
+3          ratio_special_chars_in_name    0.002118
+12               tweets_over_followers    0.001861
+14           top_tweets_reply_fraction    0.001627
+
+This partially agrees with features found to be important in the paper by Olmar Arranz‑Escudero1 · Lara Quijano‑Sanchez1,2 · Federico Liberatore2,3. For example, has_description was found to be important, but here is on the 5th place while in the paper is on the 1st place. Keep in mind that this analysis works on a subset of users while in the article the whole dataset is used.
+
+Next, numeric features were scaled to have a mean of 0 and a standard deviation of 1. This would not be needed if tree-based algorithm were to be used for classification. However, in this analysis, a neural network was used for which scaling is proved to increase stability and quality of the results.
+
+Model section:
+
+In the paper by Olmar Arranz‑Escudero1 · Lara Quijano‑Sanchez1,2 · Federico Liberatore2,3, the best performing model was an RGCN (Relational Graph Convolutional Network). This type of a model exploits the graph structure of a social network like X. It combines information about the user itself (its features), user's connections and not only connections but also their types and also about features of its neighbours. It could be also used in this analysis and was indeed tried. Only edges connecting users in the subset of users were considered (no edge types for simplicity were considered, only edges which meant that one user is following another one). However, the results of this were not as good as that of the authors. It is perhaps due to the fact that by considering only edges between users in the subset of users, we are creating an artificial network. The users in the subset might have had connections with users also outside of the subset but we are not considering that. Hence, still a multi-branch network was created like in the paper but without the graph structure.
+
+A multi-branch NN created had the following structure:
+Numeric and boolean features had their own branch
+User description had its own branch
+tweet texts had their own branch
+
+Each branch consisted of a linear transformation, Leaky relu activation and a dropout
+
+All the results were then concatenated together and put through a linear transformation, leaky relu activation, a dropout and then again through a linear transformation into a 1 dimensional logit output.
+
+Learning was performed based on batches of 32 training data points, dropout of 0.5 was used, Binary Cross Entropy was used as the loss function (a version which combines a sigmoid layer and BCE loss for numerical stability). Adam was used as optimizer with a learning rate of 1e-3 and a weight decay of 1e-5. A threshold for deciding that a data point should have the predicted value 1 was probability 0.5.
+
+At first, the hyperparameters of the nn were kept constant and the analysis was performed for all lang tweets and English only tweets and then within these two versions, several embedding variants were tried.
+
+Embedding variants are as follows:
+en v1: description encoded using all-MiniLM-L6-v2, concatenated tweets encoded using all-MiniLM-L6-v2
+en v2: description encoded using all-MiniLM-L6-v2, concatenated tweets encoded using paraphrase-MiniLM-L6-v2
+en v3: description encoded using all-MiniLM-L6-v2, each tweet encoded using ... and then mean-pooling performed to obtain one tweet embedding vector per user
+all lang v1: description encoded using distiluse-base-multilingual-cased-v1, concatenated tweets encoded using distiluse-base-multilingual-cased-v1
+all lang v2: description encoded using distiluse-base-multilingual-cased-v1, concatenated tweets encoded using paraphrase-multilingual-MiniLM-L12-v2
+all lang v3: description encoded using distiluse-base-multilingual-cased-v1, each tweet encoded using distiluse-base-multilingual-cased-v1 and then mean-pooling performed to obtain one tweet embedding vector per user
+
+Then, for each version of the dataset, a nn was run for 10 epochs and the following results were obtained:
+
+en v1:
+
+Epoch 01 | Train Loss: 0.5872 | Test Loss: 0.3729 | Test Acc: 0.9037 | Test F1: 0.0429 | Test Prec: 0.0971 | Test Rec: 0.0275
+Epoch 02 | Train Loss: 0.5356 | Test Loss: 0.3773 | Test Acc: 0.8939 | Test F1: 0.0403 | Test Prec: 0.0694 | Test Rec: 0.0284
+Epoch 03 | Train Loss: 0.5147 | Test Loss: 0.3851 | Test Acc: 0.8864 | Test F1: 0.0465 | Test Prec: 0.0680 | Test Rec: 0.0353
+Epoch 04 | Train Loss: 0.5010 | Test Loss: 0.3894 | Test Acc: 0.8804 | Test F1: 0.0572 | Test Prec: 0.0749 | Test Rec: 0.0463
+Epoch 05 | Train Loss: 0.4906 | Test Loss: 0.3549 | Test Acc: 0.8964 | Test F1: 0.0432 | Test Prec: 0.0783 | Test Rec: 0.0298
+Epoch 06 | Train Loss: 0.4820 | Test Loss: 0.3485 | Test Acc: 0.9004 | Test F1: 0.0369 | Test Prec: 0.0764 | Test Rec: 0.0243
+Epoch 07 | Train Loss: 0.4762 | Test Loss: 0.3608 | Test Acc: 0.8916 | Test F1: 0.0474 | Test Prec: 0.0761 | Test Rec: 0.0344
+Epoch 08 | Train Loss: 0.4700 | Test Loss: 0.3757 | Test Acc: 0.8837 | Test F1: 0.0604 | Test Prec: 0.0825 | Test Rec: 0.0477
+Epoch 09 | Train Loss: 0.4664 | Test Loss: 0.3531 | Test Acc: 0.9012 | Test F1: 0.0445 | Test Prec: 0.0922 | Test Rec: 0.0293
+Epoch 10 | Train Loss: 0.4625 | Test Loss: 0.3441 | Test Acc: 0.9045 | Test F1: 0.0439 | Test Prec: 0.1020 | Test Rec: 0.0280
+
+en v2:
+
+Epoch 01 | Train Loss: 0.4095 | Test Loss: 0.3154 | Test Acc: 0.8605 | Test F1: 0.3851 | Test Prec: 0.2943 | Test Rec: 0.5568
+Epoch 02 | Train Loss: 0.3661 | Test Loss: 0.2927 | Test Acc: 0.8751 | Test F1: 0.3972 | Test Prec: 0.3196 | Test Rec: 0.5247
+Epoch 03 | Train Loss: 0.3489 | Test Loss: 0.2488 | Test Acc: 0.9016 | Test F1: 0.3944 | Test Prec: 0.3810 | Test Rec: 0.4088
+Epoch 04 | Train Loss: 0.3373 | Test Loss: 0.2486 | Test Acc: 0.9014 | Test F1: 0.3941 | Test Prec: 0.3804 | Test Rec: 0.4088
+Epoch 05 | Train Loss: 0.3305 | Test Loss: 0.2500 | Test Acc: 0.8971 | Test F1: 0.3995 | Test Prec: 0.3684 | Test Rec: 0.4363
+Epoch 06 | Train Loss: 0.3236 | Test Loss: 0.2496 | Test Acc: 0.8997 | Test F1: 0.3924 | Test Prec: 0.3739 | Test Rec: 0.4129
+Epoch 07 | Train Loss: 0.3195 | Test Loss: 0.2577 | Test Acc: 0.8939 | Test F1: 0.4051 | Test Prec: 0.3615 | Test Rec: 0.4606
+Epoch 08 | Train Loss: 0.3153 | Test Loss: 0.2541 | Test Acc: 0.8991 | Test F1: 0.3986 | Test Prec: 0.3744 | Test Rec: 0.4262
+Epoch 09 | Train Loss: 0.3125 | Test Loss: 0.2710 | Test Acc: 0.8858 | Test F1: 0.3951 | Test Prec: 0.3379 | Test Rec: 0.4757
+Epoch 10 | Train Loss: 0.3100 | Test Loss: 0.2637 | Test Acc: 0.8932 | Test F1: 0.3918 | Test Prec: 0.3541 | Test Rec: 0.4386
+
+all lang v1:
+
+Epoch 01 | Train Loss: 0.3470 | Test Loss: 0.2434 | Test Acc: 0.9011 | Test F1: 0.4233 | Test Prec: 0.3775 | Test Rec: 0.4819
+Epoch 02 | Train Loss: 0.3288 | Test Loss: 0.2636 | Test Acc: 0.8880 | Test F1: 0.4178 | Test Prec: 0.3435 | Test Rec: 0.5333
+Epoch 03 | Train Loss: 0.3172 | Test Loss: 0.2491 | Test Acc: 0.8984 | Test F1: 0.4182 | Test Prec: 0.3679 | Test Rec: 0.4844
+Epoch 04 | Train Loss: 0.3094 | Test Loss: 0.2386 | Test Acc: 0.9025 | Test F1: 0.4246 | Test Prec: 0.3824 | Test Rec: 0.4772
+Epoch 05 | Train Loss: 0.3033 | Test Loss: 0.2404 | Test Acc: 0.9030 | Test F1: 0.4291 | Test Prec: 0.3854 | Test Rec: 0.4840
+Epoch 06 | Train Loss: 0.2986 | Test Loss: 0.2332 | Test Acc: 0.9063 | Test F1: 0.4232 | Test Prec: 0.3947 | Test Rec: 0.4562
+Epoch 07 | Train Loss: 0.2945 | Test Loss: 0.2302 | Test Acc: 0.9074 | Test F1: 0.4221 | Test Prec: 0.3985 | Test Rec: 0.4486
+Epoch 08 | Train Loss: 0.2909 | Test Loss: 0.2325 | Test Acc: 0.9064 | Test F1: 0.4257 | Test Prec: 0.3959 | Test Rec: 0.4604
+Epoch 09 | Train Loss: 0.2880 | Test Loss: 0.2384 | Test Acc: 0.9051 | Test F1: 0.4269 | Test Prec: 0.3916 | Test Rec: 0.4692
+Epoch 10 | Train Loss: 0.2855 | Test Loss: 0.2407 | Test Acc: 0.9022 | Test F1: 0.4137 | Test Prec: 0.3773 | Test Rec: 0.4578
+
+all_lang v2:
+
+Epoch 01 | Train Loss: 0.4000 | Test Loss: 0.2608 | Test Acc: 0.8916 | Test F1: 0.4208 | Test Prec: 0.3521 | Test Rec: 0.5228
+Epoch 02 | Train Loss: 0.3492 | Test Loss: 0.2521 | Test Acc: 0.8941 | Test F1: 0.4169 | Test Prec: 0.3562 | Test Rec: 0.5025
+Epoch 03 | Train Loss: 0.3304 | Test Loss: 0.2614 | Test Acc: 0.8895 | Test F1: 0.4188 | Test Prec: 0.3468 | Test Rec: 0.5287
+Epoch 04 | Train Loss: 0.3176 | Test Loss: 0.2260 | Test Acc: 0.9092 | Test F1: 0.4189 | Test Prec: 0.4043 | Test Rec: 0.4347
+Epoch 05 | Train Loss: 0.3096 | Test Loss: 0.2372 | Test Acc: 0.9030 | Test F1: 0.4170 | Test Prec: 0.3812 | Test Rec: 0.4604
+Epoch 06 | Train Loss: 0.3038 | Test Loss: 0.2413 | Test Acc: 0.9017 | Test F1: 0.4234 | Test Prec: 0.3794 | Test Rec: 0.4789
+Epoch 07 | Train Loss: 0.2984 | Test Loss: 0.2317 | Test Acc: 0.9053 | Test F1: 0.4095 | Test Prec: 0.3861 | Test Rec: 0.4359
+Epoch 08 | Train Loss: 0.2919 | Test Loss: 0.2498 | Test Acc: 0.8948 | Test F1: 0.4174 | Test Prec: 0.3581 | Test Rec: 0.5004
+Epoch 09 | Train Loss: 0.2888 | Test Loss: 0.2351 | Test Acc: 0.9021 | Test F1: 0.4097 | Test Prec: 0.3755 | Test Rec: 0.4507
+Epoch 10 | Train Loss: 0.2862 | Test Loss: 0.2404 | Test Acc: 0.9005 | Test F1: 0.4168 | Test Prec: 0.3732 | Test Rec: 0.4718
+
+As one can see, the best results were the ones based on ...
