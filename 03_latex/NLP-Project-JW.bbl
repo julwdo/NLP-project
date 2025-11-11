@@ -8,16 +8,15 @@ Arranz-Escudero, O., Quijano-Sanchez, L., and Liberatore, F. (2025).
 
 \bibitem[\protect\astroncite{Chawla et~al.}{2002}]{Chawla2002smote}
 Chawla, N.~V., Bowyer, K.~W., Hall, L.~O., and Kegelmeyer, W.~P. (2002).
-\newblock SMOTE: Synthetic Minority Over-sampling Technique.
+\newblock SMOTE: Synthetic minority over-sampling technique.
 \newblock {\em Journal of Artificial Intelligence Research}, 16:321--357.
 
-\bibitem[\protect\astroncite{Feng et~al.}{2022}]{feng2022twibot22}
+\bibitem[\protect\astroncite{Feng et~al.}{2023}]{feng2022twibot22}
 Feng, S., Tan, Z., Wan, H., Wang, N., Chen, Z., Zhang, B., Zheng, Q., Zhang,
   W., Lei, Z., Yang, S., Feng, X., Zhang, Q., Wang, H., Liu, Y., Bai, Y., Wang,
-  H., Cai, Z., Wang, Y., Zheng, L., Ma, Z., Li, J., and Luo, M. (2022).
-\newblock TwiBot-22: Towards Graph-Based Twitter Bot Detection.
-\newblock In {\em Advances in Neural Information Processing Systems 35
-  (Datasets and Benchmarks Track)}.
-\newblock arXiv:2206.04564.
+  H., Cai, Z., Wang, Y., Zheng, L., Ma, Z., Li, J., and Luo, M. (2023).
+\newblock TwiBot-22: Towards graph-based Twitter bot detection.
+\newblock {\em arXiv}.
+\newblock \url{https://arxiv.org/abs/2206.04564}.
 
 \end{thebibliography}

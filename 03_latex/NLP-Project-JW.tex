@@ -203,7 +203,7 @@ First, pairwise correlations between numeric features were examined (see Figure~
 *{1}{S[table-format=1.2]}
 }
 \hline
-\textbf{Feature 1} & \textbf{Feature 2} & \textbf{Absolute correlation} \\
+\textbf{Feature 1} & \textbf{Feature 2} & \textbf{Absolute Correlation} \\
 \hline
 followers\_count & follower\_rate & 0.98 \\
 following\_count & following\_rate & 0.98 \\
@@ -291,7 +291,7 @@ tweets\_over\_followers & 0.0014 \\
 \end{tabular}
 \end{table}
 
-These results are generally consistent with \citet{ArranzEscudero2025}. For example, has\_description was the most important feature in their study, whereas it ranked third here. The feature tweet\_count was the most important in both studies. Small differences are likely due to this analysis being conducted on a subset of users, while the referenced study considered the full dataset.
+These results are generally consistent with \citet{ArranzEscudero2025}. For example, has\_description was the most important feature in their study, whereas it ranked third here. The feature \texttt{tweet\_count} was the~sec- ond most important in both studies. Small differences are likely due to this analysis being conducted on a~subset of users, while the referenced study considered the full dataset.
 
 \subsection{Scaling}
 
@@ -537,11 +537,11 @@ Feature and text representation choices also imposed limitations. Feature select
 
 Finally, class imbalance and evaluation constraints should be considered. Although SMOTE mitigated~imbalance, synthetic oversampling may not fully capture the true distribution of bot behavior. Discrepancies between cross-validation and test set performance indicate some sensitivity to data splits, and no external~datasets were used to assess generalization.
 
-These limitations highlight opportunities for future work, such as using the full TwiBot-22 dataset, exploring graph-based architectures, incorporating more sophisticated feature interactions, experimenting with alternative embedding strategies, and evaluating the approach on additional datasets to improve generalization and~ro- bustness.
+These limitations highlight opportunities for future work, such as using the full TwiBot-22 dataset, exploring graph-based architectures, incorporating more sophisticated feature interactions, experimenting with alternative embedding strategies, and evaluating the approach on additional datasets to improve generalization and~robust- ness.
 
 \section*{AI Usage Disclaimer}
 
-This work was assisted by AI tools (mainly OpenAI’s GPT-5 mini, both free and paid versions) for research~guidance, including understanding concepts such as class imbalance handling and graph neural networks, for refining and drafting code to process data or display statistics, and for improving language and clarity in the final LaTeX report. The AI was used solely as a support tool; all research decisions, analyses, interpretations, and~conclusions are the author’s original work. The author remains fully responsible for the content, accuracy, and claims presented in this project.
+This work was assisted by AI tools (mainly OpenAI’s GPT-5, both free and paid versions) for research~guidance, including understanding concepts such as class imbalance handling and graph neural networks, for refining and drafting code to process data or display statistics, and for improving language and clarity in the final report.~The AI was used solely as a support tool; all research decisions, analyses, interpretations, and conclusions are my~own. I remain fully responsible for the content, accuracy, and claims presented in this project.
 
 \printbibliography{bib}
 \end{document}
